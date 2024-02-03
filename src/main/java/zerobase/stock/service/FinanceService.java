@@ -2,6 +2,7 @@ package zerobase.stock.service;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FinanceService {
@@ -28,6 +30,7 @@ public class FinanceService {
 
     @Cacheable(key = "#companyName", value = CacheKey.KEY_FINANCE)
     public ScrapedResult getDividendByCompanyName(String companyName){
+        log.info("FinanceService getDividendByCompanyName -> "+companyName);
         // 1. 회사명을 기준으로 회사 정보를 조회
         CompanyEntity company = companyRepository.findByName(companyName)
                 .orElseThrow(() -> new NoCompanyException());

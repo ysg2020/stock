@@ -1,5 +1,6 @@
 package zerobase.stock.scraper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 public class YahooFinanceScraper implements Scraper{
 
@@ -25,6 +27,7 @@ public class YahooFinanceScraper implements Scraper{
 
     @Override
     public ScrapedResult scrap(Company company){
+        log.info("YahooFinanceScraper scrap -> "+company.getName());
         var scrapResult = new ScrapedResult();
         scrapResult.setCompany(company);
         try{

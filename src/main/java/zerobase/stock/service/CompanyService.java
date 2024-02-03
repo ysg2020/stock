@@ -1,6 +1,7 @@
 package zerobase.stock.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.Trie;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +20,7 @@ import zerobase.stock.scraper.Scraper;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @AllArgsConstructor
 public class CompanyService {
@@ -29,6 +30,7 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
     private final DividendRepository dividendRepository;
     public Company save(String ticker){
+        log.info("[CompanyService] save -> "+ticker);
         boolean exists = companyRepository.existsByTicker(ticker);
         if(exists){
             throw new RuntimeException("already exists ticker -> " + ticker);
@@ -37,9 +39,11 @@ public class CompanyService {
     }
 
     public Page<CompanyEntity> getAllCompany(Pageable pageable){
+        log.info("[CompanyService] getAllCompany");
         return companyRepository.findAll(pageable);
     }
     private Company storeCompanyAndDividend(String ticker){
+        log.info("[CompanyService] storeCompanyAndDividend -> "+ticker);
         //ticker 를 기준으로 회사를 스크래핑
         Company company = scraper.scrapCompanyByTicker(ticker);
         if(ObjectUtils.isEmpty(company)){
@@ -58,18 +62,22 @@ public class CompanyService {
     }
 
     public void addAutocompleteKeyword(String keyword){
+        log.info("[CompanyService] addAutocompleteKeyword -> "+keyword);
         trie.put(keyword, null);
     }
     public List<String> autocomplete(String keyword){
+        log.info("[CompanyService] autocomplete -> "+keyword);
         return (List<String>) trie.prefixMap(keyword).keySet()
                 .stream()
                 .limit(10)
                 .collect(Collectors.toList());
     }
     public void deleteAutocompleteKeyword(String keyword){
+        log.info("[CompanyService] deleteAutocompleteKeyword -> "+keyword);
         trie.remove(keyword);
     }
     public List<String> getCompanyNamesByKeyword(String keyword){
+        log.info("[CompanyService] getCompanyNamesByKeyword -> "+keyword);
         Pageable limit = PageRequest.of(0,10);
         Page<CompanyEntity> companyEntities = companyRepository.findByNameStartingWithIgnoreCase(keyword,limit);
         return companyEntities.stream()
@@ -78,6 +86,7 @@ public class CompanyService {
     }
 
     public String deleteCompany(String ticker) {
+        log.info("[CompanyService] deleteCompany -> "+ticker);
         CompanyEntity company = companyRepository.findByTicker(ticker)
                 .orElseThrow(() -> new NoCompanyException());
 
